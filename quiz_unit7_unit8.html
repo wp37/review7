@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Global Success 7 - Unit 7 & 8</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .quiz-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .quiz-header h1 {
+            color: #1a1a2e;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .quiz-header p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .timer-bar {
+            background: linear-gradient(90deg, #ff6b6b, #feca57);
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 15px;
+            transition: width 0.5s ease;
+        }
+
+        .timer-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin-top: 10px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+        }
+
+        .question-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+
+        .vocab-badge {
+            background: #00b894;
+            color: white;
+        }
+
+        .grammar-badge {
+            background: #0984e3;
+            color: white;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #667eea20, #764ba220);
+            border-color: #667eea;
+        }
+
+        .option.correct {
+            background: #00b89430;
+            border-color: #00b894;
+        }
+
+        .option.incorrect {
+            background: #ff6b6b30;
+            border-color: #ff6b6b;
+        }
+
+        .option-label {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .score-text {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .result-message {
+            font-size: 1.5rem;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+
+        .result-detail {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .student-form {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 600px) {
+            .quiz-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .question-text {
+                font-size: 1rem;
+            }
+
+            .option {
+                padding: 12px 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Student Form -->
+        <div id="studentForm" class="quiz-header">
+            <h1>🎓 Bài Kiểm Tra Trắc Nghiệm</h1>
+            <p>Global Success 7 - Unit 7 & 8</p>
+            <p style="margin-top: 10px; color: #667eea;">A Closer Look 1, 2 & Looking Back</p>
+
+            <div class="student-form" style="margin-top: 30px;">
+                <div class="form-group">
+                    <label>Họ và tên:</label>
+                    <input type="text" id="studentName" placeholder="Nhập họ và tên..." required>
+                </div>
+                <div class="form-group">
+                    <label>Lớp:</label>
+                    <select id="studentClass">
+                        <option value="7A1">7A1</option>
+                        <option value="7A2">7A2</option>
+                        <option value="7A3">7A3</option>
+                        <option value="7A4">7A4</option>
+                        <option value="7A5">7A5</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Số điện thoại (Cha/Mẹ):</label>
+                    <input type="tel" id="parentPhone" placeholder="Nhập số điện thoại cha/mẹ..."
+                        pattern="[0-9]{10,11}">
+                </div>
+                <button class="btn btn-primary" onclick="startQuiz()" style="margin-top: 20px;">
+                    🚀 Bắt Đầu Làm Bài
+                </button>
+            </div>
+        </div>
+
+        <!-- Quiz Header -->
+        <div id="quizHeader" class="quiz-header hidden">
+            <h1>📝 Global Success 7 - Unit 7 & 8</h1>
+            <p>A Closer Look 1, 2 & Looking Back</p>
+            <div class="timer-bar" id="timerBar" style="width: 100%;"></div>
+            <div class="timer-text" id="timerText">15:00</div>
+            <div class="progress-info">
+                <span id="progressText">Câu 1/20</span>
+                <span id="answeredText">Đã trả lời: 0/20</span>
+            </div>
+        </div>
+
+        <!-- Question Cards -->
+        <div id="questionContainer" class="hidden"></div>
+
+        <!-- Navigation -->
+        <div id="navContainer" class="btn-container hidden">
+            <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()">← Trước</button>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Tiếp →</button>
+            <button class="btn btn-primary hidden" id="submitBtn" onclick="submitQuiz()">📤 Nộp Bài</button>
+        </div>
+
+        <!-- Result Card -->
+        <div id="resultCard" class="result-card hidden">
+            <div class="score-circle">
+                <span class="score-text" id="scoreText">0</span>
+            </div>
+            <h2 class="result-message" id="resultMessage">Kết quả của bạn</h2>
+            <p class="result-detail" id="resultDetail"></p>
+            <button class="btn btn-primary" onclick="location.reload()">🔄 Làm Lại</button>
+        </div>
+    </div>
+
+    <script>
+        // Quiz Questions - 20 câu (10 từ vựng + 10 ngữ pháp)
+        const questions = [
+            // ===== UNIT 7: TRAFFIC - VOCABULARY (5 câu) =====
+            {
+                id: 1,
+                unit: 7,
+                category: "vocabulary",
+                question: "The road is _______ because there are many holes in it.",
+                options: ["bumpy", "smooth", "straight", "narrow"],
+                correct: 0,
+                explanation: "Bumpy = gồ ghề, lồi lõm"
+            },
+            {
+                id: 2,
+                unit: 7,
+                category: "vocabulary",
+                question: "_______ should walk on the pavement, not on the road.",
+                options: ["Drivers", "Cyclists", "Pedestrians", "Passengers"],
+                correct: 2,
+                explanation: "Pedestrian = người đi bộ"
+            },
+            {
+                id: 3,
+                unit: 7,
+                category: "vocabulary",
+                question: "We got stuck in a _______ for two hours this morning.",
+                options: ["road sign", "zebra crossing", "traffic jam", "seat belt"],
+                correct: 2,
+                explanation: "Traffic jam = tắc đường, kẹt xe"
+            },
+            {
+                id: 4,
+                unit: 7,
+                category: "vocabulary",
+                question: "All drivers must _______ traffic rules strictly.",
+                options: ["break", "obey", "forget", "ignore"],
+                correct: 1,
+                explanation: "Obey = tuân thủ"
+            },
+            {
+                id: 5,
+                unit: 7,
+                category: "vocabulary",
+                question: "You should cross the road at the _______.",
+                options: ["traffic light", "zebra crossing", "road sign", "pavement"],
+                correct: 1,
+                explanation: "Zebra crossing = vạch kẻ đường cho người đi bộ"
+            },
+
+            // ===== UNIT 7: TRAFFIC - GRAMMAR (5 câu) =====
+            {
+                id: 6,
+                unit: 7,
+                category: "grammar",
+                question: "_______ is it from your house to the school?",
+                options: ["How long", "How far", "How much", "How many"],
+                correct: 1,
+                explanation: "How far dùng để hỏi khoảng cách"
+            },
+            {
+                id: 7,
+                unit: 7,
+                category: "grammar",
+                question: "It _______ about 5 kilometers from here to the city center.",
+                options: ["are", "is", "has", "have"],
+                correct: 1,
+                explanation: "Cấu trúc: It is + khoảng cách + from... to..."
+            },
+            {
+                id: 8,
+                unit: 7,
+                category: "grammar",
+                question: "You _______ wear a helmet when riding a motorbike.",
+                options: ["should", "shouldn't", "mustn't", "don't have to"],
+                correct: 0,
+                explanation: "Should dùng để đưa ra lời khuyên nên làm"
+            },
+            {
+                id: 9,
+                unit: 7,
+                category: "grammar",
+                question: "Children _______ play on the street. It's very dangerous.",
+                options: ["should", "shouldn't", "must", "can"],
+                correct: 1,
+                explanation: "Shouldn't dùng để đưa ra lời khuyên không nên làm"
+            },
+            {
+                id: 10,
+                unit: 7,
+                category: "grammar",
+                question: "_______ from Ha Noi to Ho Chi Minh City is about 1,700 km.",
+                options: ["It is", "There is", "This is", "That is"],
+                correct: 0,
+                explanation: "Cấu trúc: It is + khoảng cách + from... to..."
+            },
+
+            // ===== UNIT 8: FILMS - VOCABULARY (5 câu) =====
+            {
+                id: 11,
+                unit: 8,
+                category: "vocabulary",
+                question: "The movie was so _______ that I fell asleep halfway through.",
+                options: ["gripping", "hilarious", "dull", "exciting"],
+                correct: 2,
+                explanation: "Dull = buồn tẻ, chán ngắt"
+            },
+            {
+                id: 12,
+                unit: 8,
+                category: "vocabulary",
+                question: "That horror movie is very _______. I couldn't sleep after watching it.",
+                options: ["funny", "frightening", "boring", "confusing"],
+                correct: 1,
+                explanation: "Frightening = làm sợ hãi, đáng sợ"
+            },
+            {
+                id: 13,
+                unit: 8,
+                category: "vocabulary",
+                question: "The comedy was so _______ that everyone in the cinema was laughing.",
+                options: ["sad", "scary", "hilarious", "touching"],
+                correct: 2,
+                explanation: "Hilarious = vui nhộn, hài hước"
+            },
+            {
+                id: 14,
+                unit: 8,
+                category: "vocabulary",
+                question: "Steven Spielberg is a famous film _______.",
+                options: ["actor", "director", "viewer", "audience"],
+                correct: 1,
+                explanation: "Director = đạo diễn"
+            },
+            {
+                id: 15,
+                unit: 8,
+                category: "vocabulary",
+                question: "The film has a _______ storyline that keeps you on the edge of your seat.",
+                options: ["boring", "dull", "gripping", "confusing"],
+                correct: 2,
+                explanation: "Gripping = hấp dẫn, cuốn hút"
+            },
+
+            // ===== UNIT 8: FILMS - GRAMMAR (5 câu) =====
+            {
+                id: 16,
+                unit: 8,
+                category: "grammar",
+                question: "_______ the film is long, it's really interesting.",
+                options: ["Although", "However", "Because", "So"],
+                correct: 0,
+                explanation: "Although dùng để nối 2 mệnh đề trong 1 câu"
+            },
+            {
+                id: 17,
+                unit: 8,
+                category: "grammar",
+                question: "The movie has good acting. _______, I don't like the ending.",
+                options: ["Although", "However", "Because", "Though"],
+                correct: 1,
+                explanation: "However dùng để nối 2 câu riêng biệt"
+            },
+            {
+                id: 18,
+                unit: 8,
+                category: "grammar",
+                question: "_______ she was tired, she watched the film until the end.",
+                options: ["However", "Although", "But", "Therefore"],
+                correct: 1,
+                explanation: "Although/Though đứng đầu mệnh đề"
+            },
+            {
+                id: 19,
+                unit: 8,
+                category: "grammar",
+                question: "The film is very popular. _______, tickets are expensive.",
+                options: ["Although", "Though", "However", "Because"],
+                correct: 2,
+                explanation: "However đứng đầu câu thứ 2, có dấu phẩy theo sau"
+            },
+            {
+                id: 20,
+                unit: 8,
+                category: "grammar",
+                question: "_______ the special effects were amazing, the plot was confusing.",
+                options: ["However", "But", "Although", "So"],
+                correct: 2,
+                explanation: "Although/Though nối 2 mệnh đề tương phản trong 1 câu"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = new Array(questions.length).fill(null);
+        let timeLeft = 15 * 60; // 15 minutes
+        let timerInterval;
+        let studentName = "";
+        let studentClass = "";
+        let parentPhone = "";
+
+        // Google Apps Script Web App URL - Replace with your deployed URL
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznkIYjMnW8s1Xjerv25QL2E1N8xpU1uIo31gSsMVZaioGtt3yPLM5iUfvTxaSJQj-_kQ/exec";
+
+        function startQuiz() {
+            studentName = document.getElementById('studentName').value.trim();
+            studentClass = document.getElementById('studentClass').value;
+            parentPhone = document.getElementById('parentPhone').value.trim();
+
+            if (!studentName) {
+                alert('Vui lòng nhập họ và tên!');
+                return;
+            }
+
+            document.getElementById('studentForm').classList.add('hidden');
+            document.getElementById('quizHeader').classList.remove('hidden');
+            document.getElementById('questionContainer').classList.remove('hidden');
+            document.getElementById('navContainer').classList.remove('hidden');
+
+            renderQuestion();
+            startTimer();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timerText').textContent =
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            const percentage = (timeLeft / (15 * 60)) * 100;
+            document.getElementById('timerBar').style.width = percentage + '%';
+
+            if (timeLeft < 60) {
+                document.getElementById('timerText').style.color = '#ff0000';
+            } else if (timeLeft < 180) {
+                document.getElementById('timerText').style.color = '#ff6b6b';
+            }
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            const categoryBadge = q.category === 'vocabulary'
+                ? '<span class="category-badge vocab-badge">Từ vựng</span>'
+                : '<span class="category-badge grammar-badge">Ngữ pháp</span>';
+
+            const unitBadge = `Unit ${q.unit}`;
+
+            let html = `
+                <div class="question-card">
+                    <span class="question-number">${unitBadge} - Câu ${currentQuestion + 1}</span>
+                    ${categoryBadge}
+                    <p class="question-text">${q.question}</p>
+                    <div class="options">
+            `;
+
+            const labels = ['A', 'B', 'C', 'D'];
+            q.options.forEach((option, index) => {
+                const selectedClass = answers[currentQuestion] === index ? 'selected' : '';
+                html += `
+                    <div class="option ${selectedClass}" onclick="selectOption(${index})">
+                        <span class="option-label">${labels[index]}</span>
+                        <span>${option}</span>
+                    </div>
+                `;
+            });
+
+            html += '</div></div>';
+            document.getElementById('questionContainer').innerHTML = html;
+
+            // Update progress
+            document.getElementById('progressText').textContent = `Câu ${currentQuestion + 1}/${questions.length}`;
+            const answeredCount = answers.filter(a => a !== null).length;
+            document.getElementById('answeredText').textContent = `Đã trả lời: ${answeredCount}/${questions.length}`;
+
+            // Update navigation buttons
+            document.getElementById('prevBtn').style.visibility = currentQuestion === 0 ? 'hidden' : 'visible';
+
+            if (currentQuestion === questions.length - 1) {
+                document.getElementById('nextBtn').classList.add('hidden');
+                document.getElementById('submitBtn').classList.remove('hidden');
+            } else {
+                document.getElementById('nextBtn').classList.remove('hidden');
+                document.getElementById('submitBtn').classList.add('hidden');
+            }
+        }
+
+        function selectOption(index) {
+            answers[currentQuestion] = index;
+            renderQuestion();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function submitQuiz() {
+            clearInterval(timerInterval);
+
+            let correctCount = 0;
+            const results = [];
+
+            questions.forEach((q, index) => {
+                const isCorrect = answers[index] === q.correct;
+                if (isCorrect) correctCount++;
+
+                results.push({
+                    question: index + 1,
+                    unit: q.unit,
+                    category: q.category,
+                    userAnswer: answers[index] !== null ? q.options[answers[index]] : "Chưa trả lời",
+                    correctAnswer: q.options[q.correct],
+                    isCorrect: isCorrect
+                });
+            });
+
+            const score = (correctCount / questions.length * 10).toFixed(1);
+            const timeUsed = 15 * 60 - timeLeft;
+            const minutesUsed = Math.floor(timeUsed / 60);
+            const secondsUsed = timeUsed % 60;
+
+            // Show results
+            document.getElementById('quizHeader').classList.add('hidden');
+            document.getElementById('questionContainer').classList.add('hidden');
+            document.getElementById('navContainer').classList.add('hidden');
+            document.getElementById('resultCard').classList.remove('hidden');
+
+            document.getElementById('scoreText').textContent = score;
+            document.getElementById('resultDetail').textContent =
+                `Đúng: ${correctCount}/${questions.length} câu | Thời gian: ${minutesUsed}:${secondsUsed.toString().padStart(2, '0')}`;
+
+            let message = '';
+            if (score >= 9) message = '🏆 Xuất sắc!';
+            else if (score >= 7) message = '🌟 Tốt lắm!';
+            else if (score >= 5) message = '👍 Khá!';
+            else message = '💪 Cần cố gắng thêm!';
+
+            document.getElementById('resultMessage').textContent = message;
+
+            // Send results to Google Sheets
+            sendResultsToSheet({
+                timestamp: new Date().toISOString(),
+                studentName: studentName,
+                studentClass: studentClass,
+                parentPhone: parentPhone,
+                score: score,
+                correctCount: correctCount,
+                totalQuestions: questions.length,
+                timeUsed: `${minutesUsed}:${secondsUsed.toString().padStart(2, '0')}`,
+                details: JSON.stringify(results)
+            });
+        }
+
+        function sendResultsToSheet(data) {
+            // Send data to Google Apps Script
+            if (APPS_SCRIPT_URL !== "YOUR_APPS_SCRIPT_URL_HERE") {
+                fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                }).catch(err => console.log('Error sending to sheet:', err));
+            } else {
+                console.log('Results:', data);
+            }
+        }
+    </script>
+</body>
+
+</html>
