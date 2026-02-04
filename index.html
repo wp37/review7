@@ -614,7 +614,99 @@
             startTimer();
         }
 
-        // ... (existing timer functions) ...
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timerText').textContent =
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            const percentage = (timeLeft / (15 * 60)) * 100;
+            document.getElementById('timerBar').style.width = percentage + '%';
+
+            if (timeLeft < 60) {
+                document.getElementById('timerText').style.color = '#ff0000';
+            } else if (timeLeft < 180) {
+                document.getElementById('timerText').style.color = '#ff6b6b';
+            }
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            const categoryBadge = q.category === 'vocabulary'
+                ? '<span class="category-badge vocab-badge">Từ vựng</span>'
+                : '<span class="category-badge grammar-badge">Ngữ pháp</span>';
+
+            const unitBadge = `Unit ${q.unit}`;
+
+            let html = `
+                <div class="question-card">
+                    <span class="question-number">${unitBadge} - Câu ${currentQuestion + 1}</span>
+                    ${categoryBadge}
+                    <p class="question-text">${q.question}</p>
+                    <div class="options">
+            `;
+
+            const labels = ['A', 'B', 'C', 'D'];
+            q.options.forEach((option, index) => {
+                const selectedClass = answers[currentQuestion] === index ? 'selected' : '';
+                html += `
+                    <div class="option ${selectedClass}" onclick="selectOption(${index})">
+                        <span class="option-label">${labels[index]}</span>
+                        <span>${option}</span>
+                    </div>
+                `;
+            });
+
+            html += '</div></div>';
+            document.getElementById('questionContainer').innerHTML = html;
+
+            // Update progress
+            document.getElementById('progressText').textContent = `Câu ${currentQuestion + 1}/${questions.length}`;
+            const answeredCount = answers.filter(a => a !== null).length;
+            document.getElementById('answeredText').textContent = `Đã trả lời: ${answeredCount}/${questions.length}`;
+
+            // Update navigation buttons
+            document.getElementById('prevBtn').style.visibility = currentQuestion === 0 ? 'hidden' : 'visible';
+
+            if (currentQuestion === questions.length - 1) {
+                document.getElementById('nextBtn').classList.add('hidden');
+                document.getElementById('submitBtn').classList.remove('hidden');
+            } else {
+                document.getElementById('nextBtn').classList.remove('hidden');
+                document.getElementById('submitBtn').classList.add('hidden');
+            }
+        }
+
+        function selectOption(index) {
+            answers[currentQuestion] = index;
+            renderQuestion();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
 
         function submitQuiz() {
             clearInterval(timerInterval);

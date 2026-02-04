@@ -559,13 +559,49 @@
         // Google Apps Script Web App URL - Replace with your deployed URL
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbywBMtTZtEpy0m5EyrrYtpqHUaJH9knmExoeopPAAfnboZbYhTZSRGbcCEtlxckYDxPrA/exec";
 
+        // Check if user already took the quiz
+        window.onload = function () {
+            if (localStorage.getItem('quiz_completed_unit78') === 'true') {
+                showCompletedMessage();
+            }
+        };
+
+        function showCompletedMessage() {
+            document.getElementById('studentForm').innerHTML = `
+                <h1>🎓 Thông Báo</h1>
+                <p>Bạn đã hoàn thành bài kiểm tra này.</p>
+                <div class="result-card" style="margin-top: 20px; box-shadow: none;">
+                    <div class="score-circle" style="width: 100px; height: 100px;">
+                        <span style="font-size: 2rem; color: white; font-weight: bold;">✔</span>
+                    </div>
+                    <p>Mỗi học sinh chỉ được làm bài 1 lần.</p>
+                </div>
+            `;
+            document.getElementById('quizHeader').classList.add('hidden');
+            document.getElementById('questionContainer').classList.add('hidden');
+            document.getElementById('navContainer').classList.add('hidden');
+        }
+
         function startQuiz() {
             studentName = document.getElementById('studentName').value.trim();
-            studentClass = document.getElementById('studentClass').value;
+            studentClass = document.getElementById('studentClass').value.trim();
             parentPhone = document.getElementById('parentPhone').value.trim();
 
             if (!studentName) {
                 alert('Vui lòng nhập họ và tên!');
+                return;
+            }
+            if (!studentClass) {
+                alert('Vui lòng nhập tên lớp!');
+                return;
+            }
+            if (!parentPhone) {
+                alert('Vui lòng nhập số điện thoại Cha/Mẹ!');
+                return;
+            }
+            // Basic phone regex validation (10-11 digits)
+            if (!/^\d{10,11}$/.test(parentPhone)) {
+                alert('Vui lòng nhập số điện thoại hợp lệ (10-11 số)!');
                 return;
             }
 
@@ -675,6 +711,9 @@
         function submitQuiz() {
             clearInterval(timerInterval);
 
+            // Mark quiz as completed in localStorage
+            localStorage.setItem('quiz_completed_unit78', 'true');
+
             let correctCount = 0;
             const results = [];
 
@@ -692,7 +731,9 @@
                 });
             });
 
-            const score = (correctCount / questions.length * 10).toFixed(1);
+            // Score calculation: 20 questions, 10 points max -> 0.5 per question
+            const score = (correctCount * 0.5).toFixed(1);
+
             const timeUsed = 15 * 60 - timeLeft;
             const minutesUsed = Math.floor(timeUsed / 60);
             const secondsUsed = timeUsed % 60;
