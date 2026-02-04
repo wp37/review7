@@ -557,7 +557,7 @@
         let parentPhone = "";
 
         // Google Apps Script Web App URL - Replace with your deployed URL
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznkIYjMnW8s1Xjerv25QL2E1N8xpU1uIo31gSsMVZaioGtt3yPLM5iUfvTxaSJQj-_kQ/exec";
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbywBMtTZtEpy0m5EyrrYtpqHUaJH9knmExoeopPAAfnboZbYhTZSRGbcCEtlxckYDxPrA/exec";
 
         function startQuiz() {
             studentName = document.getElementById('studentName').value.trim();
@@ -730,16 +730,32 @@
         }
 
         function sendResultsToSheet(data) {
-            // Send data to Google Apps Script
+            // Send data to Google Apps Script using URL parameters (avoid CORS issues)
             if (APPS_SCRIPT_URL !== "YOUR_APPS_SCRIPT_URL_HERE") {
-                fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                }).catch(err => console.log('Error sending to sheet:', err));
+                const params = new URLSearchParams({
+                    timestamp: data.timestamp,
+                    studentName: data.studentName,
+                    studentClass: data.studentClass,
+                    parentPhone: data.parentPhone || '',
+                    score: data.score,
+                    correctCount: data.correctCount,
+                    totalQuestions: data.totalQuestions,
+                    timeUsed: data.timeUsed,
+                    details: data.details || ''
+                });
+
+                // Create hidden iframe to submit data
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = APPS_SCRIPT_URL + '?' + params.toString();
+                document.body.appendChild(iframe);
+
+                // Remove iframe after 5 seconds
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                }, 5000);
+
+                console.log('✅ Đã gửi kết quả về Google Sheets');
             } else {
                 console.log('Results:', data);
             }
